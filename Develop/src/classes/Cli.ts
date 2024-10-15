@@ -62,14 +62,14 @@ class Cli {
           name: 'vehicleType',
           message: 'Select a vehicle type',
           // TODONE: Update the choices array to include Truck and Motorbike
-          choices: ['Car', 'Tuck', 'Motorbike'],
+          choices: ['Car', 'Truck', 'Motorbike'],
         },
       ])
       .then((answers: any) => {
         if (answers.vehicleType === 'Car') {
           // create a car
           this.createCar();
-        } else if (answers.vehicleType === 'Car'){
+        } else if (answers.vehicleType === 'Truck'){
           this.createTruck();
         } else {
           this.createMotorbike();
@@ -112,6 +112,26 @@ class Cli {
           name: 'topSpeed',
           message: 'Enter Top Speed',
         },
+        {
+          type: 'input',
+          name: 'frontWheelDiameter',
+          message: 'Enter Front Wheel Diameter',
+        },
+        {
+          type: 'input',
+          name: 'frontWheelBrand',
+          message: 'Enter Front Wheel Brand',
+        },
+        {
+          type: 'input',
+          name: 'rearWheelDiameter',
+          message: 'Enter Rear Wheel Diameter',
+        },
+        {
+          type: 'input',
+          name: 'rearWheelBrand',
+          message: 'Enter Rear Wheel Brand',
+        },
       ])
       .then((answers: any) => {
         const car = new Car(
@@ -123,7 +143,7 @@ class Cli {
           parseInt(answers.year),
           parseInt(answers.weight),
           parseInt(answers.topSpeed),
-          []
+          [new Wheel(answers.frontWheelDiameter, answers.frontWheelBrand) , new Wheel(answers.frontWheelDiameter, answers.frontWheelBrand) , new Wheel(answers.rearWheelDiameter, answers.rearWheelBrand) , new Wheel(answers.rearWheelDiameter, answers.rearWheelBrand)]
         );
         // push the car to the vehicles array
         this.vehicles.push(car);
@@ -173,6 +193,26 @@ class Cli {
           name: 'towingCapacity',
           message: 'Enter Towing Capacity',
         },
+        {
+          type: 'input',
+          name: 'frontWheelDiameter',
+          message: 'Enter Front Wheel Diameter',
+        },
+        {
+          type: 'input',
+          name: 'frontWheelBrand',
+          message: 'Enter Front Wheel Brand',
+        },
+        {
+          type: 'input',
+          name: 'rearWheelDiameter',
+          message: 'Enter Rear Wheel Diameter',
+        },
+        {
+          type: 'input',
+          name: 'rearWheelBrand',
+          message: 'Enter Rear Wheel Brand',
+        },
       ])
       .then((answers: any) => {
         const truck = new Truck(
@@ -184,7 +224,7 @@ class Cli {
           parseInt(answers.year),
           parseInt(answers.weight),
           parseInt(answers.topSpeed),
-          [],
+          [new Wheel(answers.frontWheelDiameter, answers.frontWheelBrand), new Wheel(answers.frontWheelDiameter, answers.frontWheelBrand), new Wheel(answers.rearWheelDiameter, answers.rearWheelBrand), new Wheel(answers.rearWheelDiameter, answers.rearWheelBrand)],
           parseInt(answers.towingCapacity)
         );
         // push the truck to the vehicles array
@@ -265,7 +305,7 @@ class Cli {
           parseInt(answers.year),
           parseInt(answers.weight),
           parseInt(answers.topSpeed),
-          []
+          [new Wheel(answers.frontWheelDiameter, answers.frontWheelBrand), new Wheel(answers.rearWheelDiameter, answers.rearWheelBrand)]
         );
         // push the motorbike to the vehicles array
         this.vehicles.push(motorbike);
@@ -282,7 +322,7 @@ class Cli {
 
   // method to find a vehicle to tow
   // TODO: add a parameter to accept a truck object
-  findVehicleToTow(i: Car | Truck | Motorbike): void {
+  findVehicleToTow(truck: Truck): void {
     inquirer
       .prompt([
         {
@@ -297,10 +337,12 @@ class Cli {
           }),
         },
       ])
-      .then((answers: Car | Truck | Motorbike) => {
+      .then((answers) => {
         // TODONE: check if the selected vehicle is the truck
+        this.selectedVehicleVin;
+        answers.vehicleToTow.vin;
 
-        if(answers == truck) {
+        if(answers.vehicleToTow.vin === this.selectedVehicleVin) {
           console.log(`the truck cannot tow itself`);
         } else {
           truck.tow(answers);
@@ -397,14 +439,16 @@ class Cli {
         } else if (answers.action === 'tow') {  // TODONE: add statements to perform the tow action only if the selected vehicle is a truck. Call the findVehicleToTow method to find a vehicle to tow and pass the selected truck as an argument. After calling the findVehicleToTow method, you will need to return to avoid instantly calling the performActions method again since findVehicleToTow is asynchronous.
           for (let i = 0; i < this.vehicles.length; i++) {
             if (this.vehicles[i].vin === this.selectedVehicleVin && this.vehicles[i] instanceof Truck) {
-              this.findVehicleToTow(this.vehicles[i]);
+              const selectVehicle = this.vehicles[i] as Truck;
+              this.findVehicleToTow(selectVehicle);
               return;
             }
           }
-        }   else if (answers.action === 'wheelie') {// TODO: add statements to perform the wheelie action only if the selected vehicle is a motorbike
+        }   else if (answers.action === 'wheelie') {// TODONE: add statements to perform the wheelie action only if the selected vehicle is a motorbike
           for (let i = 0; i < this.vehicles.length; i++) {
             if (this.vehicles[i].vin === this.selectedVehicleVin && this.vehicles[i] instanceof Motorbike) {
-              this.vehicles[i].wheelie();
+              const selectVehicle = this.vehicles[i] as Motorbike;
+              selectVehicle.wheelie();
             }
           }
         }
